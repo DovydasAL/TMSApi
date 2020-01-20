@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMSApi", "TMSApi.csproj", "{C44A36CF-5955-49BB-9055-4E5633205302}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSScraper", "..\TMSScraper\TMSScraper.csproj", "{6DC409F5-9044-4951-9FFD-685BB22FD515}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSEntities", "..\TMSEntities\TMSEntities.csproj", "{1EFF4CD3-039C-4969-8123-804CDF4CF61F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C44A36CF-5955-49BB-9055-4E5633205302}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C44A36CF-5955-49BB-9055-4E5633205302}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C44A36CF-5955-49BB-9055-4E5633205302}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C44A36CF-5955-49BB-9055-4E5633205302}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DC409F5-9044-4951-9FFD-685BB22FD515}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DC409F5-9044-4951-9FFD-685BB22FD515}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DC409F5-9044-4951-9FFD-685BB22FD515}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DC409F5-9044-4951-9FFD-685BB22FD515}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EFF4CD3-039C-4969-8123-804CDF4CF61F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EFF4CD3-039C-4969-8123-804CDF4CF61F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EFF4CD3-039C-4969-8123-804CDF4CF61F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EFF4CD3-039C-4969-8123-804CDF4CF61F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D3C6AD3D-0B0D-49B3-892F-A962866344E2}
+	EndGlobalSection
+EndGlobal
