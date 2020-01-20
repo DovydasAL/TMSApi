@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TMSApi.Models;
+using TMSEntities;
 
 namespace TMSApi.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly TMSContext _tmsContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, TMSContext context)
         {
             _logger = logger;
+            _tmsContext = context;
         }
 
         public IActionResult Index()

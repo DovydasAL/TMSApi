@@ -1,7 +1,7 @@
 ﻿
 namespace TMSEntities
 {
-    internal class Constants
+    public class Constants
     {
         public const string BASE_PATH = "https://termmasterschedule.drexel.edu";
         public const string HOME_URL = "https://termmasterschedule.drexel.edu/webtms_du/app?page=Home&service=page";

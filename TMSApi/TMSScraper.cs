@@ -5,8 +5,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TMSEntities;
 
-namespace TMSEntities
+namespace TMSApi
 {
     public class TMSScraper
     {
@@ -15,13 +16,13 @@ namespace TMSEntities
         public List<Listing> Listings { get; set; } = new List<Listing>();
         public long New { get; set; }
         public long Updated { get; set; }
-        public async Task<bool> Execute()
+        public async Task<bool> Execute(TMSContext context)
         {
             var listings = new List<Listing>();
             var termNodes = await GetTermNodes();
             foreach (var termNode in termNodes)
             {
-                var collegePaths = await GetCollegePaths(termNode);
+                var collegePaths = await GetCollegePaths(termNode, context);
                 foreach (var collegePath in collegePaths)
                 {
                     var departmentPaths = await GetDepartmentPaths(collegePath);
@@ -35,7 +36,7 @@ namespace TMSEntities
                     }
                 }
             }
-            SaveListings();
+            SaveListings(context);
             return true;
         }
 
@@ -55,24 +56,20 @@ namespace TMSEntities
             }
         }
 
-        public async Task<IEnumerable<string>> GetCollegePaths(HtmlNode termNode)
+        public async Task<IEnumerable<string>> GetCollegePaths(HtmlNode termNode, TMSContext context)
         {
             using (var client = new HttpClient())
             {
-                Term term;
-                using (var ctx = new TMSDAL())
+                Term term = context.Terms.FirstOrDefault(x => x.LookupLabel == termNode.InnerText.Replace(" ", ""));
+                if (term == null)
                 {
-                    term = ctx.Terms.FirstOrDefault(x => x.LookupLabel == termNode.InnerText.Replace(" ", ""));
-                    if (term == null)
+                    term = new Term()
                     {
-                        term = new Term()
-                        {
-                            TermName = termNode.InnerText.Trim(),
-                            LookupLabel = termNode.InnerText.Replace(" ", "")
-                        };
-                        Terms.Add(term);
-                        LastTerm = term;
-                    }
+                        TermName = termNode.InnerText.Trim(),
+                        LookupLabel = termNode.InnerText.Replace(" ", "")
+                    };
+                    Terms.Add(term);
+                    LastTerm = term;
                 }
                 var termPath = termNode.Attributes.First(x => x.Name == "href").Value.Replace("amp;", "");
                 var termListing = await client.GetAsync(Constants.BASE_PATH + termPath);
@@ -163,49 +160,46 @@ namespace TMSEntities
             Listings.Add(listing);
         }
 
-        public async Task SaveListings()
+        public async Task SaveListings(TMSContext context)
         {
-            using (TMSDAL ctx = new TMSDAL())
+            foreach (var listing in Listings)
             {
-                foreach (var listing in Listings)
+                var oldListing = context.Listings.FirstOrDefault(x => x.CRN == listing.CRN && x.Term.TermID == listing.Term.TermID);
+                if (oldListing != null && !oldListing.IsEqual(listing))
                 {
-                    var oldListing = ctx.Listings.FirstOrDefault(x => x.CRN == listing.CRN && x.Term.TermID == listing.Term.TermID);
-                    if (oldListing != null && !oldListing.IsEqual(listing))
-                    {
 
-                        oldListing.Subject = listing.Subject;
-                        oldListing.CourseNumber = listing.CourseNumber;
-                        oldListing.InstructionType = listing.InstructionType;
-                        oldListing.InstructionMethod = listing.InstructionMethod;
-                        oldListing.Section = listing.Section;
-                        oldListing.MaxEnroll = listing.MaxEnroll;
-                        oldListing.Enroll = listing.Enroll;
-                        oldListing.CourseTitle = listing.CourseTitle;
-                        oldListing.Times = listing.Times;
-                        oldListing.Instructor = listing.Instructor;
-                        oldListing.ModifiedDate = DateTime.Now;
-                        Updated += 1;
-                    }
-                    else
-                    {
-                        New += 1;
-                        ctx.Add(listing);
-                    }
+                    oldListing.Subject = listing.Subject;
+                    oldListing.CourseNumber = listing.CourseNumber;
+                    oldListing.InstructionType = listing.InstructionType;
+                    oldListing.InstructionMethod = listing.InstructionMethod;
+                    oldListing.Section = listing.Section;
+                    oldListing.MaxEnroll = listing.MaxEnroll;
+                    oldListing.Enroll = listing.Enroll;
+                    oldListing.CourseTitle = listing.CourseTitle;
+                    oldListing.Times = listing.Times;
+                    oldListing.Instructor = listing.Instructor;
+                    oldListing.ModifiedDate = DateTime.Now;
+                    Updated += 1;
                 }
-                foreach (var term in Terms)
+                else
                 {
-                    if (ctx.Terms.Any(x => x.LookupLabel == term.LookupLabel))
-                    {
-                        var oldTerm = ctx.Terms.First(x => x.LookupLabel == term.LookupLabel);
-                        ctx.Entry(oldTerm).CurrentValues.SetValues(term);
-                    }
-                    else
-                    {
-                        ctx.Add(term);
-                    }
+                    New += 1;
+                    context.Add(listing);
                 }
-                ctx.SaveChanges();
             }
+            foreach (var term in Terms)
+            {
+                if (context.Terms.Any(x => x.LookupLabel == term.LookupLabel))
+                {
+                    var oldTerm = context.Terms.First(x => x.LookupLabel == term.LookupLabel);
+                    context.Entry(oldTerm).CurrentValues.SetValues(term);
+                }
+                else
+                {
+                    context.Add(term);
+                }
+            }
+            context.SaveChanges();
         }
     }
 }
